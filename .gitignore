@@ -1,0 +1,25 @@
+# Sensitive config — never commit real credentials
+config/email_config.php
+
+# User uploads
+assets/uploads/*
+!assets/uploads/.gitkeep
+
+# Composer dependencies (installed during Docker build from composer.lock)
+vendor/
+
+# Claude Code
+.claude/
+
+# Environment / IDE
+.env
+.env.local
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# XAMPP / server artifacts
+error_log
+php_errorlog
