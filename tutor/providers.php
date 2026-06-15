@@ -91,11 +91,14 @@ $stmt = $pdo->prepare("
     SELECT c.*,
            COUNT(DISTINCT p.id)  AS total_placements,
            SUM(p.status IN ('approved','active')) AS active_placements,
-           pu.full_name AS provider_user_name,
-           pu.email     AS provider_user_email
+           (SELECT pu.full_name FROM users pu
+              WHERE pu.company_id = c.id AND pu.role='provider' AND pu.is_active=1
+              LIMIT 1) AS provider_user_name,
+           (SELECT pu.email FROM users pu
+              WHERE pu.company_id = c.id AND pu.role='provider' AND pu.is_active=1
+              LIMIT 1) AS provider_user_email
     FROM companies c
     LEFT JOIN placements p ON p.company_id = c.id
-    LEFT JOIN users pu ON pu.company_id = c.id AND pu.role='provider' AND pu.is_active=1
     $whereSQL
     GROUP BY c.id
     ORDER BY active_placements DESC, total_placements DESC, c.name ASC
