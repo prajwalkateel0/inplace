@@ -13,14 +13,16 @@ $options = [
   PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 
-// Aiven (and most managed MySQL providers) require TLS. mysqlnd negotiates
-// SSL automatically when the server requires it; we just skip verifying the
-// server certificate against a CA unless one is explicitly provided.
-$options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
-
+// TiDB Serverless (and most managed MySQL providers) require TLS.
+// Use an explicit CA bundle so mysqlnd actually initiates SSL.
+// Priority: DB_SSL_CA env var → system CA bundle (Linux/Docker) → skip-verify fallback.
 $sslCa = getenv('DB_SSL_CA');
 if ($sslCa && is_file($sslCa)) {
   $options[PDO::MYSQL_ATTR_SSL_CA] = $sslCa;
+} elseif (is_file('/etc/ssl/certs/ca-certificates.crt')) {
+  $options[PDO::MYSQL_ATTR_SSL_CA] = '/etc/ssl/certs/ca-certificates.crt';
+} else {
+  $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
 }
 
 $pdo = new PDO(
