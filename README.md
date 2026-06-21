@@ -7,7 +7,9 @@ teams, built for the University of Leicester. It connects **students**,
 from applications and approvals, through visits and reflections, to
 reporting and analytics.
 
-Live demo: https://inplace-uup1.onrender.com/inplace/login.php
+🌐 **Live demo:** https://inplace-uup1.onrender.com/inplace/login.php
+
+![Login](docs/screenshots/login.png)
 
 ---
 
