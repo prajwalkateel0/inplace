@@ -75,7 +75,18 @@ function sendAdminRegistrationNotification(PDO $pdo, int $newUserId, string $ful
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
-            $mail->Host       = $mailCfg['smtp_host'];
+            $smtpHostname     = $mailCfg['smtp_host'];
+            $resolvedIp       = gethostbyname($smtpHostname);
+            $mail->Host       = ($resolvedIp !== $smtpHostname) ? $resolvedIp : $smtpHostname;
+            if ($resolvedIp !== $smtpHostname) {
+                $mail->SMTPOptions = [
+                    'ssl' => [
+                        'peer_name'        => $smtpHostname,
+                        'verify_peer'      => true,
+                        'verify_peer_name' => true,
+                    ],
+                ];
+            }
             $mail->SMTPAuth   = true;
             $mail->Username   = $mailCfg['smtp_user'];
             $mail->Password   = $mailCfg['smtp_pass'];
